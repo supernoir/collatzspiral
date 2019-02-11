@@ -7,17 +7,18 @@ require_once './vendor/meyfa/php-svg/autoloader.php';
 
 use SVG\SVG;
 use SVG\Nodes\Shapes\SVGRect;
+use SVG\Nodes\Shapes\SVGLine;
 
 class CollatzSpiral
 {
 
-  protected $argv;
+  protected $presets;
   const DEFAULT_INITIAL = 13;
   const DEFAULT_MAX = 1000;
 
-  public function __construct($argv)
+  public function __construct($presets)
   {
-    $this->argv = $argv;
+    $this->presets = $presets;
   }
 
   /**
@@ -25,8 +26,8 @@ class CollatzSpiral
    */
   public function calculateCollatzTree($ini, $max)
   {
-    if (isset($this->argv) && is_numeric($this->argv)) {
-      $ini = $this->argv[0];
+    if (isset($this->presets) && is_numeric($this->presets)) {
+      $ini = $this->presets[0];
     } else {
       $ini = self::DEFAULT_INITIAL;
     }
@@ -46,7 +47,6 @@ class CollatzSpiral
    */
   public function printCollatzNumbersToConsole()
   {
-    $v = $this->argv;
     $arr = self::calculateCollatzTree(13, 100);
     foreach ($arr as $val) {
       if ($val % 2 === 0) {
@@ -60,18 +60,41 @@ class CollatzSpiral
   /**
    * Creates SVG image
    */
-  public function createGraphic()
+  public function createGraphic($arr)
   {
-    $image = new SVG(100, 100);
+    $width = 640;
+    $height = 480;
+    $image = new SVG($width, $height);
     $doc = $image->getDocument();
 
-    $square = new SVGRect(0, 0, 40, 40);
-    $square->setStyle('fill', '#0000FF');
-    $doc->addChild($square);
+    for ($i = 0; $i < sizeof($arr); $i++) {
+      echo $arr[$i] . '|';
+        $line = new SVGLine($width / 2, $height - $arr[$i], $arr[$i]*10, $arr[$i]);
+        $square = new SVGRect($width / 2, $height - $arr[$i], $arr[$i]*10, $arr[$i]);
+        if ($arr[$i] % 2 === 0) {
+          $line->setStyle('stroke', '#AA00AA');
+          $square->setStyle('fill', '#FF00FF');
+        } else {
+          $line->setStyle('stroke', '#00AA00');
+          $square->setStyle('fill', '#00FF00');
+        }
+      $square->setStyle('fill-opacity', 0.1);
+      $line->setStyle('stroke-width', $i * 0.025);
+      $doc->addChild($line);
+      $doc->addChild($square);
+
+    }
     echo $image;
   }
 
+  public function createSpiral()
+  {
+    $arr = self::calculateCollatzTree(13, 100);
+    return self::createGraphic($arr);
+  }
 }
 
-$collatz = new CollatzSpiral($argv);
-$collatz->printCollatzNumbersToConsole();
+$collatz = new CollatzSpiral($presets);
+//$collatz->printCollatzNumbersToConsole();
+//$collatz->createGraphic();
+$collatz->createSpiral();
