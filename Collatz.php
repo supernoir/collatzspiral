@@ -8,6 +8,8 @@ require_once './vendor/meyfa/php-svg/autoloader.php';
 use SVG\SVG;
 use SVG\Nodes\Shapes\SVGRect;
 use SVG\Nodes\Shapes\SVGLine;
+use SVG\Nodes\Shapes\SVGPath;
+use SVG\Nodes\Shapes\SVGPolyline;
 
 class CollatzSpiral
 {
@@ -66,23 +68,47 @@ class CollatzSpiral
     $height = 480;
     $image = new SVG($width, $height);
     $doc = $image->getDocument();
+    $nodes = [];
+    $stroke = "#000000";
+    $stage = 0;
+    $direction = [];
 
     for ($i = 0; $i < sizeof($arr); $i++) {
-        $line = new SVGLine($width / 2, $height - $arr[$i], $arr[$i]*10, $arr[$i]);
-        $square = new SVGRect($width / 2, $height - $arr[$i], $arr[$i]*10, $arr[$i]);
+      if ($stage % 4 === 0) {
+        $stage = 1;
+      } else {
+        $stage = $stage + 1;
+      }
+      
+      switch($stage)
+      {
+        case 1:
+        $direction = [$arr[$i],$arr[$i]];
+        case 2:
+        $direction = [$arr[$i],-$arr[$i]];
+        case 3:
+        $direction = [-$arr[$i],-$arr[$i]];
+        case 4:
+        $direction = [-$arr[$i],$arr[$i]];
+      }
+      
+      $nodes[] = [$width/2, $i === 0 ? $arr[$i] :$arr[$i-1]];
+      //$nodes[] = [$width/2, $i === 0 ? $arr[$i] :$arr[$i-1]];
+      $nodes[] = $direction;
+      //$nodes[] = [$arr[$i]*pi(), $arr[$i]/pi()];
+
         if ($arr[$i] % 2 === 0) {
-          $line->setStyle('stroke', '#AA00AA');
-          $square->setStyle('fill', '#FF00FF');
+          $stroke = "#AA00AA";
         } else {
-          $line->setStyle('stroke', '#00AA00');
-          $square->setStyle('fill', '#00FF00');
+          $stroke = "#00AA00";
         }
-      $square->setStyle('fill-opacity', 0.1);
-      $line->setStyle('stroke-width', $i * 0.025);
-      $doc->addChild($line);
-      $doc->addChild($square);
 
     }
+    $path = new SVGPolyline($nodes);
+    $path->setStyle('stroke', $stroke);
+    $path->setStyle('stroke-width', 0.2);
+    $path->setStyle('fill-opacity',0);
+    $doc->addChild($path);
     echo $image;
   }
 
