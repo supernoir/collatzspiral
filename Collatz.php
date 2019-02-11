@@ -68,7 +68,6 @@ class CollatzSpiral
     $doc = $image->getDocument();
 
     for ($i = 0; $i < sizeof($arr); $i++) {
-      echo $arr[$i] . '|';
         $line = new SVGLine($width / 2, $height - $arr[$i], $arr[$i]*10, $arr[$i]);
         $square = new SVGRect($width / 2, $height - $arr[$i], $arr[$i]*10, $arr[$i]);
         if ($arr[$i] % 2 === 0) {
@@ -95,6 +94,4 @@ class CollatzSpiral
 }
 
 $collatz = new CollatzSpiral($presets);
-//$collatz->printCollatzNumbersToConsole();
-//$collatz->createGraphic();
 $collatz->createSpiral();
