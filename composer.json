@@ -1,0 +1,14 @@
+{
+    "name": "supernoir/collatzspiral",
+    "type": "project",
+    "authors": [
+        {
+            "name": "supernoir",
+            "email": "kawohl.bentodesign@gmail.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "meyfa/php-svg": "^0.9.0"
+    }
+}
